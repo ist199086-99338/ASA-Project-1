@@ -1,6 +1,8 @@
 #include <iostream>
 #include <sstream>
+
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -36,9 +38,46 @@ vector<int> read_sequence() {
     return seq;
 }
 
+/*
+    extracts longest possible subsequence of x in ascending order
+*/
+vector<int> mps(vector<int> x) {
+    // recursion stop condition
+    if(x.size() <= 1)
+        return x;
+    
+    // exclude last element of x
+    vector<int> clamped(x.begin(), x.end() - 1);
+
+    // recursive step
+    vector<int> recurs = mps(clamped);
+
+    // last elements
+    int x_last = x.back(),
+        recurs_last = recurs.back();
+    
+    // checking last element should suffice
+    if(x_last > recurs_last) {
+        recurs.push_back(x_last);
+        return recurs;
+    }
+
+    return recurs;
+}
+
+void print_solution(vector<int> solution) {
+    cout << "Size: " << solution.size() << endl;
+    for(size_t i = 0; i < solution.size(); i++)
+        cout << "i=" << i << ": " << solution[i] << endl;
+}
+
 void solve_problem_1() {
     vector<int> sequence = read_sequence();
+
+    vector<int> solution = mps(sequence);
     
+    print_solution(solution);
+
     // TODO: problem 1 solution
 }
 
