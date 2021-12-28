@@ -57,7 +57,7 @@ vector<int> longest_possible_subsequence(vector<int> x) {
             if(p[j - 1].empty())
                 break;
 
-            if(p[j].empty() && p[j - 1].back() < x[i]) {
+            if((p[j].empty() && p[j - 1].back() < x[i]) || (!p[j].empty() && p[j - 1].back() < p[j].front())) {
                 p[j] = p[j - 1];
                 p[j].push_back(x[i]);
                 break;
