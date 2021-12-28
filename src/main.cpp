@@ -15,6 +15,7 @@ int main() {
     
     string line;
     getline(cin, line);
+
     problem = stoi(line);
 
     if (problem == 1) solve_problem_1();
@@ -41,28 +42,41 @@ vector<int> read_sequence() {
 /*
     extracts longest possible subsequence of x in ascending order
 */
-vector<int> mps(vector<int> x) {
-    // recursion stop condition
-    if(x.size() <= 1)
-        return x;
-    
-    // exclude last element of x
-    vector<int> clamped(x.begin(), x.end() - 1);
+vector<int> longest_possible_subsequence(vector<int> x) {
+    vector< vector<int> > p = vector< vector<int> >(x.size(), vector<int>());
 
-    // recursive step
-    vector<int> recurs = mps(clamped);
+    p[0].push_back(x[0]);
 
-    // last elements
-    int x_last = x.back(),
-        recurs_last = recurs.back();
-    
-    // checking last element should suffice
-    if(x_last > recurs_last) {
-        recurs.push_back(x_last);
-        return recurs;
+    for(size_t i = 1; i < x.size(); i++) {
+        
+        // skip repeats
+        if(x[i] == x[i - 1])
+            continue;
+
+        for(size_t j = 1; j < x.size(); j++) {
+            if(p[j - 1].empty())
+                break;
+
+            if(p[j].empty() && p[j - 1].back() < x[i]) {
+                p[j] = p[j - 1];
+                p[j].push_back(x[i]);
+                break;
+            }
+
+            if(p[j - 1].back() > x[i]) {
+                if(j == 1 || p[j - 1][p[j - 1].size() - 2] < x[i]) {
+                    p[j - 1].pop_back();
+                    p[j - 1].push_back(x[i]);
+                }
+            }
+        }
     }
 
-    return recurs;
+    for(size_t i = 0; i < x.size(); i++)
+        if(i + 1 == p.size() || p[i + 1].empty())
+            return p[i];
+
+    return vector<int> ();
 }
 
 void print_solution(vector<int> solution) {
@@ -74,11 +88,9 @@ void print_solution(vector<int> solution) {
 void solve_problem_1() {
     vector<int> sequence = read_sequence();
 
-    vector<int> solution = mps(sequence);
+    vector<int> solution = longest_possible_subsequence(sequence);
     
     print_solution(solution);
-
-    // TODO: problem 1 solution
 }
 
 void solve_problem_2() {
