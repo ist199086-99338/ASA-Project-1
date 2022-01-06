@@ -39,58 +39,48 @@ vector<int> read_sequence() {
     return seq;
 }
 
+typedef struct {
+    size_t v, n;
+} duplo;
+
 /*
     extracts longest possible subsequence of x in ascending order
 */
-vector<int> longest_possible_subsequence(vector<int> x) {
-    vector< vector<int> > p = vector< vector<int> >(x.size(), vector<int>());
+void longest_possible_subsequence(vector<int> x) {
+    vector<duplo> p = vector<duplo> (x.size(), {1, 1});
 
-    p[0].push_back(x[0]);
+    size_t result = 1;
+    size_t repeated = x.size();
 
-    for(size_t i = 1; i < x.size(); i++) {
-        
-        // skip repeats
-        if(x[i] == x[i - 1])
-            continue;
-
-        for(size_t j = 1; j < x.size(); j++) {
-            if(p[j - 1].empty())
-                break;
-
-            if((p[j].empty() && p[j - 1].back() < x[i]) || (!p[j].empty() && p[j - 1].back() < p[j].front())) {
-                p[j] = p[j - 1];
-                p[j].push_back(x[i]);
-                break;
-            }
-
-            if(p[j - 1].back() > x[i]) {
-                if(j == 1 || p[j - 1][p[j - 1].size() - 2] < x[i]) {
-                    p[j - 1].pop_back();
-                    p[j - 1].push_back(x[i]);
+    for (size_t i = 0; i < x.size(); i++) {
+        for (size_t j = 0; j < i; j++) {
+            if (x[i] > x[j]) { // then there's a new subvector with one more element
+                if (p[j].v + 1 == p[i].v) // esta a repetir o valor
+                    p[i].n += p[j].n;
+                
+                else if (p[j].v + 1 > p[i].v) { // esta a subir no size da sublista
+                    p[i].v = p[j].v + 1; // nova lista tem tamanho +1
+                    p[i].n = p[j].n;     // ha p[j].n listas de tamanho p[i].v
                 }
+
+                if(p[i].v > result) // result vai ser updated
+                    result = p[i].v;
             }
         }
     }
 
-    for(size_t i = 0; i < x.size(); i++)
-        if(i + 1 == p.size() || p[i + 1].empty())
-            return p[i];
-
-    return vector<int> ();
-}
-
-void print_solution(vector<int> solution) {
-    cout << "Size: " << solution.size() << endl;
-    for(size_t i = 0; i < solution.size(); i++)
-        cout << "i=" << i << ": " << solution[i] << endl;
+    repeated = 0;
+    for (size_t i = 0; i < p.size(); i++) {
+        if (p[i].v == result)
+            repeated += p[i].n;
+    }
+    cout << result << " " << repeated << endl;
 }
 
 void solve_problem_1() {
     vector<int> sequence = read_sequence();
-
-    vector<int> solution = longest_possible_subsequence(sequence);
     
-    print_solution(solution);
+    longest_possible_subsequence(sequence);
 }
 
 void solve_problem_2() {
