@@ -2,7 +2,6 @@
 #include <sstream>
 
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
@@ -53,6 +52,7 @@ void longest_possible_subsequence(vector<int> x) {
     size_t repeated = x.size();
 
     for (size_t i = 0; i < x.size(); i++) {
+        // ler aqui
         for (size_t j = 0; j < i; j++) {
             if (x[i] > x[j]) { // then there's a new subvector with one more element
                 if (p[j].v + 1 == p[i].v) // esta a repetir o valor
@@ -76,34 +76,34 @@ void longest_possible_subsequence(vector<int> x) {
     }
     cout << result << " " << repeated << endl;
 }
-/*
+
 void lcis(vector<int> s1, vector<int> s2) {
+    int res, var;
+    size_t size_i = s1.size();
+    size_t size_j = s2.size();
+
     // Guarda o valor da l.cis a cada index;
-    
-    vector<int> p = vector<int> (min(s1.size(), s2.size()), 1);
-    int res = 0;
+    vector<int> p = vector<int> (size_j, 0);
 
-    for (size_t i = 0; i < s1.size(); i++) {
-        int lis = 1;
-
-        for (size_t j = 0; j < s2.size(); j++) {
-            if (s1[i] == s2[j]) { // sao iguais, do something (incrementar a posicao de p maybe)
-                p[i] = max(lis, p[j]);
-                if (p[i] > res)
-                    res = p[i];
-            }
-
-            if (s1[i] > s2[j]) { 
-                // ???? update da lis ????
-                lis = max(lis, p[j]);
-            }
+    for (size_t i = 0; i < size_i; i++) {
+        var = 0;
+        for (size_t j = 0; j < size_j; j++) {
+            if (s1[i] == s2[j] && p[j] < var + 1) // found a common number, update the vector
+                p[j] = var + 1;
+            else if (s1[i] > s2[j] && p[j] > var)
+                var = p[j];
         }
     }
 
+    res = 0;
+    for (size_t j = 0; j < size_j; j++) {
+        if (p[j] > res) 
+            res = p[j];
+    }
+
     cout << res << endl;
-    
 }
-*/
+
 
 void lcis2(vector<int> s1, vector<int> s2) {
     vector< vector<duplo> > table = vector< vector<duplo> > (s1.size() + 1, vector<duplo>(s2.size() + 1, {0, 0}));
@@ -156,5 +156,5 @@ void solve_problem_2() {
     vector<int> sequence_1 = read_sequence(),
                 sequence_2 = read_sequence();
 
-    lcis2(sequence_1, sequence_2);
+    lcis(sequence_1, sequence_2);
 }
